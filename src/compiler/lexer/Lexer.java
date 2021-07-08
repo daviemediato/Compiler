@@ -73,7 +73,11 @@ public class Lexer {
     }
 
     private void readch() throws IOException {
-        this.chInput = (char) this.file.read();
+        int input = this.file.read();
+        if (input == -1) // EOF
+            throw new IOException("End of file");
+        else
+            this.chInput = (char) input;
     }
 
     private boolean readch(char ch) throws IOException {
@@ -109,21 +113,30 @@ public class Lexer {
     }
 
     private void ignoreComment(Boolean inline) throws IOException {
-        if (inline) {
-            while (!this.readch('\n'));
-            line++;
-        } else {
-           char prevCh = ' '; 
-       
-           while (prevCh != '*' && !this.readch('/')){
-               if (this.chInput == '\n')
-                   line++;
-               
-               prevCh = this.chInput; 
-           } 
+        try {
+            if (inline) {
+                while (!this.readch('\n'))
+                    ;
+                line++;
+            } else {
+                char prevCh = chInput;
+                this.readch();
+                System.out.println("Started ignoreCommentBlock - " + prevCh + "-" + chInput);
+                while (!(prevCh == '*' && chInput == '/')) {
+                    // System.out.println("-- " + chInput);
+                    this.readch();
+                    if (this.chInput == '\n')
+                        line++;
+
+                    prevCh = this.chInput;
+                }
+            }
+        } catch (IOException e) {
+            throw new IOException("Missing closing comment in line " + this.line); // Error IO - Closing Comment
         }
+        System.out.println("Finished ignoreCommentBlock - " + chInput);
     }
-    
+
     public Token scan() throws IOException {
 
         // Verificando delimitadores de entrada
@@ -178,30 +191,11 @@ public class Lexer {
             case ')':
                 this.readch();
                 return Word.rpar;
-            case '"':
-                this.readch();
-                return Word.quot;
             case '!':
                 if (this.readch('=')) {
                     return Word.dif;
                 } else {
                     return Word.excl;
-                }
-            case '*':
-                if (this.readch('/')) {
-                    return Word.rbcom;
-                } else {
-                    return Word.mul;
-                }
-            case '/':
-                if (this.readch('*')) {
-                    this.ignoreComment(false);
-                    return Word.lbcom;
-                } else if (this.readch('/')) {
-                    this.ignoreComment(true);
-                    return Word.linecom;
-                } else {
-                    return Word.div;
                 }
             case '+':
                 this.readch();
@@ -221,6 +215,29 @@ public class Lexer {
             case '}':
                 this.readch();
                 return Word.lkey;
+            // Comentarios
+            case '*':
+                this.readch();
+                if (this.chInput == '/') {
+                    return Word.rbcom;
+                } else {
+                    return Word.mul;
+                }
+            case '/':
+                this.readch();
+                if (this.chInput == '*') {
+                    this.ignoreComment(false);
+                    return Word.lbcom;
+                } else if (this.chInput == '/') {
+                    this.ignoreComment(true);
+                    return Word.linecom;
+                } else {
+                    return Word.div;
+                }
+                // Strings (Literals)
+            case '"':
+                this.readch();
+                return Word.quot;
         }
 
         // Números

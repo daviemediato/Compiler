@@ -1,4 +1,7 @@
 class Teste1
+/* Teste de comentário
+com mais de uma linha 
+
 	int a,b,c;
 	float result;
 

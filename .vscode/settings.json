@@ -1,0 +1,8 @@
+{
+	"scss.lint.propertyIgnoredDueToDisplay": "ignore",
+	"less.lint.argumentsInColorFunction": "ignore",
+	"css.lint.propertyIgnoredDueToDisplay": "ignore",
+	"scss.lint.argumentsInColorFunction": "ignore",
+	"css.lint.argumentsInColorFunction": "warning",
+	"less.lint.propertyIgnoredDueToDisplay": "ignore"
+}

@@ -13,5 +13,5 @@ public class Token {
     public String toString() {
         return "Token{" + "tag = " + tag + '}';
     }
-   
+
 }
