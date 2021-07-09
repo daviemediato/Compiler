@@ -1,7 +1,4 @@
 class Teste1
-/* Teste de comentário
-com mais de uma linha 
-
 	int a,b,c;
 	float result;
 
@@ -10,7 +7,7 @@ init
 	read (a);
 	write("Digite o valor de c:");
 	read (c);
-	b = 10.bla;
+	b = 10;
 	result = (a * c)/(b 5 - 345);
 	write("O resultado e: ");
 	write(result);

@@ -20,6 +20,7 @@ public class Tags {
             READ = 265,
             WRITE = 266,
             CLASS = 267,
+            LITERAL = 268,
             
             // OPERADORES
             
@@ -55,9 +56,6 @@ public class Tags {
             
             // FIM DO ARQUIVO
             
-            EOF = 65535,
-    
-            // ERRO
-    
-            ERROR = 420;
+            EOF = 65535;
+            
 }

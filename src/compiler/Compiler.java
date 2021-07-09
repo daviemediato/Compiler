@@ -8,7 +8,7 @@ public class Compiler {
 
     public static void main(String[] args) {
         try {
-            Lexer lexer = new Lexer("./teste1.txt");
+            Lexer lexer = new Lexer("./teste4.txt");
 
             lexer.scanAll();
 

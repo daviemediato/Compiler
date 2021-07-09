@@ -73,11 +73,7 @@ public class Lexer {
     }
 
     private void readch() throws IOException {
-        int input = this.file.read();
-        if (input == -1) // EOF
-            throw new IOException("End of file");
-        else
-            this.chInput = (char) input;
+        this.chInput = (char) this.file.read();
     }
 
     private boolean readch(char ch) throws IOException {
@@ -99,42 +95,45 @@ public class Lexer {
                 token = this.scan();
                 tokenArr.add(token);
                 System.out.println(token.toString());
-
-                if (token.tag == Tags.ERROR) {
-                    throw new Exception("lexer error in line " + this.line);
-                }
-
             } while (token.tag != Tags.EOF);
         } catch (Exception e) {
-            System.out.println("Error in Scan All: " + e.getMessage());
+            System.out.println("Lexer Error in ScanAll: " + e.getMessage());
         } finally {
             return tokenArr;
         }
     }
 
-    private void ignoreComment(Boolean inline) throws IOException {
-        try {
-            if (inline) {
-                while (!this.readch('\n'))
-                    ;
-                line++;
-            } else {
-                char prevCh = chInput;
-                this.readch();
-                System.out.println("Started ignoreCommentBlock - " + prevCh + "-" + chInput);
-                while (!(prevCh == '*' && chInput == '/')) {
-                    // System.out.println("-- " + chInput);
-                    this.readch();
-                    if (this.chInput == '\n')
-                        line++;
-
-                    prevCh = this.chInput;
-                }
-            }
-        } catch (IOException e) {
-            throw new IOException("Missing closing comment in line " + this.line); // Error IO - Closing Comment
+    private Token ignoreComment(Boolean inline) throws IOException {
+        int debugLine = this.line;
+        // Inline Comment
+        if (inline) {
+            while (!this.readch('\n'))
+                ;
+            line++;
         }
-        System.out.println("Finished ignoreCommentBlock - " + chInput);
+        // Block Comment
+        else {
+            char prevCh = chInput;
+            this.readch();
+
+            // Enquanto nao encontrar uma sequencia de chars */ (fim do bloco de comentario)
+            while (!(prevCh == '*' && chInput == '/')) {
+                if (this.chInput == Tags.EOF) {
+                    throw new IOException("Missing close block comment operator */ - line: " + debugLine);
+                }
+
+                else if (this.chInput == '\n')
+                    line++;
+
+                prevCh = this.chInput;
+                this.readch();
+            }
+            this.readch(); // Elimina o / do buffer
+        }
+
+        // Caso nao de erro, retorna o proximo token
+        return scan();
+
     }
 
     public Token scan() throws IOException {
@@ -226,71 +225,25 @@ public class Lexer {
             case '/':
                 this.readch();
                 if (this.chInput == '*') {
-                    this.ignoreComment(false);
-                    return Word.lbcom;
+                    return this.ignoreComment(false);
                 } else if (this.chInput == '/') {
-                    this.ignoreComment(true);
-                    return Word.linecom;
+                    return this.ignoreComment(true);
                 } else {
                     return Word.div;
                 }
-                // Strings (Literals)
+                // Literals
             case '"':
-                this.readch();
-                return Word.quot;
+                return parseLiteral();
         }
 
         // Números
         if (Character.isDigit(this.chInput)) {
-            Integer value = 0;
-
-            do {
-                value = (10 * value) + Character.digit(this.chInput, 10);
-                this.readch();
-
-            } while (Character.isDigit(this.chInput));
-
-            if (this.chInput == '.') {
-                Integer decimal = 0;
-                this.readch();
-
-                if (Character.isDigit(this.chInput)) {
-                    do {
-                        decimal = (10 * decimal) + Character.digit(this.chInput, 10);
-                        this.readch();
-
-                    } while (Character.isDigit(this.chInput));
-                } else {
-                    return new Token(Tags.ERROR); // Retorna erro float --> 10.bla
-                }
-
-                String floatResult = value.toString() + '.' + decimal.toString();
-                float floatValue = Float.parseFloat(floatResult);
-                return new Real(floatValue);
-            }
-
-            return new Num(value);
+            return parseDigits();
         }
 
         // Identificadores
         if (Character.isLetter(this.chInput) || this.chInput == '_') {
-            StringBuffer sb = new StringBuffer();
-
-            do {
-                sb.append(this.chInput);
-                this.readch();
-
-            } while (Character.isLetterOrDigit(this.chInput) || this.chInput == '_');
-
-            String string = sb.toString();
-            Word word = (Word) words.get(string);
-            if (word != null) {
-                return word;
-            }
-
-            word = new Word(string, Tags.ID);
-            words.put(string, word);
-            return word;
+            return parseIdentifier();
         }
 
         // Não especificados
@@ -299,4 +252,82 @@ public class Lexer {
         return t;
     }
 
+    // Complex parses functions
+
+    private Token parseLiteral() throws IOException {
+        int debugLine = line;
+        StringBuffer sb = new StringBuffer();
+
+        this.readch();
+        while (this.chInput != '\"') {
+            sb.append(this.chInput);
+
+            if (this.chInput == Tags.EOF) {
+                throw new IOException("Missing quote operator \" - line: " + debugLine);
+            } else if (this.chInput == '\n') {
+                line++;
+                throw new IOException("Invalid Literal - Grammar don't accept line break - line: " + debugLine);
+            }
+
+            this.readch();
+        }
+
+        this.readch(); // Elimina o " do buffer
+
+        String string = sb.toString();
+
+        return new Literal(string);
+
+    }
+
+    private Token parseIdentifier() throws IOException {
+        StringBuffer sb = new StringBuffer();
+
+        do {
+            sb.append(this.chInput);
+            this.readch();
+
+        } while (Character.isLetterOrDigit(this.chInput) || this.chInput == '_');
+
+        String string = sb.toString();
+        Word word = (Word) words.get(string);
+        if (word != null) {
+            return word;
+        }
+
+        word = new Word(string, Tags.ID, "Identifier");
+        words.put(string, word);
+        return word;
+    }
+
+    private Token parseDigits() throws IOException {
+        Integer value = 0;
+
+        do {
+            value = (10 * value) + Character.digit(this.chInput, 10);
+            this.readch();
+
+        } while (Character.isDigit(this.chInput));
+
+        if (this.chInput == '.') {
+            Integer decimal = 0;
+            this.readch();
+
+            if (Character.isDigit(this.chInput)) {
+                do {
+                    decimal = (10 * decimal) + Character.digit(this.chInput, 10);
+                    this.readch();
+
+                } while (Character.isDigit(this.chInput));
+            } else {
+                throw new IOException("Invalid Float Number - line: " + this.line);
+            }
+
+            String floatResult = value.toString() + '.' + decimal.toString();
+            float floatValue = Float.parseFloat(floatResult);
+            return new Real(floatValue);
+        }
+
+        return new Num(value);
+    }
 }
