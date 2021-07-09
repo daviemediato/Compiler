@@ -97,7 +97,7 @@ public class Lexer {
                 System.out.println(token.toString());
             } while (token.tag != Tags.EOF);
         } catch (Exception e) {
-            System.out.println("Lexer Error in ScanAll: " + e.getMessage());
+            System.out.println("Lexer Error: " + e.getMessage());
         } finally {
             return tokenArr;
         }

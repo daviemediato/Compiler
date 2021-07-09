@@ -1,0 +1,16 @@
+class Teste7
+	int menorQueDez;
+
+init
+	do{
+	
+		// A linha abaixo vai dar problema, devido ao \n
+		write("Valor: ");
+	
+		write(menorQueDez);
+	
+		menorQueDez = menorQueDez + 1;	
+	
+	} while( menorQueDez < 10 );
+
+stop

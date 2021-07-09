@@ -8,14 +8,17 @@
             "type": "java",
             "name": "Launch Current File",
             "request": "launch",
-            "mainClass": "compiler.Compiler"
+            "mainClass": "compiler.Compiler",
+            "console":"internalConsole"
         },
         {
             "type": "java",
             "name": "Launch Compiler",
             "request": "launch",
             "mainClass": "compiler.Compiler",
-            "projectName": "Compiler_e74c24c6"
+            "projectName": "Compiler_e74c24c6",
+            "console":"internalConsole"
+
         }
     ]
 }
