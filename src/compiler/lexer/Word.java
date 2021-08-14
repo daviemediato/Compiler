@@ -12,7 +12,7 @@ public class Word extends Token{
             
             init = new Word("init", Tags.INIT, "Init"),
             stop = new Word("stop", Tags.STOP, "Stop"),
-            word = new Word("string", Tags.STRING, "String"),
+            word = new Word("string", Tags.LITERAL, "Literal"),
             real = new Word("float", Tags.FLOAT, "Float"),
             num = new Word("int", Tags.INT, "Int"),
             ifWord = new Word("if", Tags.IF, "If"),
@@ -72,9 +72,9 @@ public class Word extends Token{
     @Override
     public String toString() {
         if(this.description == "")
-            return "Word { " + "lexema = " + lexema + " \ttag = " + tag + " }";
+            return "Word    " + "lexema = " + lexema + " \ttag = " + tag + " ";
         else
-            return "Word { " + "lexema = " + lexema + " \ttag = " + tag + " \tdescription = " + description + " }";
+            return "Word    " + "lexema = " + lexema + " \ttag = " + tag + " \tdescription = " + description + " ";
     }
     public String getLexema() {
         return lexema;

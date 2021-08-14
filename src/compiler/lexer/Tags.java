@@ -10,7 +10,7 @@ public class Tags {
             
             INIT = 256,
             STOP = 257,
-            STRING = 258,
+            LITERAL = 258,
             FLOAT = 259,
             INT = 260,
             IF = 261,
@@ -20,7 +20,6 @@ public class Tags {
             READ = 265,
             WRITE = 266,
             CLASS = 267,
-            LITERAL = 268,
             
             // OPERADORES
             

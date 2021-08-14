@@ -210,10 +210,10 @@ public class Lexer {
                 return Word.dot;
             case '{':
                 this.readch();
-                return Word.rkey;
+                return Word.lkey;
             case '}':
                 this.readch();
-                return Word.lkey;
+                return Word.rkey;
             // Comentarios
             case '*':
                 this.readch();

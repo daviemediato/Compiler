@@ -10,7 +10,7 @@ public class Literal extends Token {
 
     @Override
     public String toString() {
-        return "Literal { " + "value = " + value + " }";
+        return "Literal     " + "value = " + value + "  ";
     }
 
 }
