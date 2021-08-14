@@ -1,21 +1,26 @@
-
 package compiler;
-import compiler.lexer.Lexer;
-import java.io.*;
 
+import compiler.syntatic.Syntatic;
 
 public class Compiler {
 
+    public static void main(String[] args) {
+        try {
+            Syntatic parser;
+            String defaultFile = "./teste1_1.txt";
+            if (args.length == 1)
+                parser = new Syntatic(args[0]);
+            else
+                parser = new Syntatic(defaultFile);
 
-    public static void main(String[] args){
-       try {
-           Lexer lexer = new Lexer("./testeSequela.txt");                 
-         
-           lexer.scanAll();
-           
-       } catch(Exception e) {
-            System.out.println("File not found: " + e.getMessage());
-       }
+            parser.run();
+
+            System.out.println("Syntatic Success");
+
+        } catch (Exception e) {
+            System.out.println("Syntatic Error Detected");
+            System.out.println(e.getMessage());
+        }
     }
-    
+
 }

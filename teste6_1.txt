@@ -1,0 +1,27 @@
+// Esse comentário vai ser ignorado :D
+class Teste6
+	float x,y,z;
+	float result;
+
+init
+	/* Recebe os valores x, y, z */
+	write("Digite o valor de x:");
+	read (x);
+	write("Digite o valor de y:");
+	read (y);
+	write("Digite o valor de z:");
+	read (z);
+
+	/*Calcula o resultado*/
+	result = (x * y) + z;
+	
+	if (result > 0){
+		write("O resultado é positivo");
+	};
+	if (result < 0){
+		WRITE("O resultado é negativo");
+	}
+	else{
+		write("O resultado é zero");
+	};
+stop

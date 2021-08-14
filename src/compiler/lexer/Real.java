@@ -1,8 +1,7 @@
 
 package compiler.lexer;
 
-
-public class Real extends Token{
+public class Real extends Token {
     public final float value;
 
     public Real(float value) {
@@ -12,7 +11,7 @@ public class Real extends Token{
 
     @Override
     public String toString() {
-        return "Real{" + "value = " + value + '}';
+        return "Real    " + "value = " + value + "  ";
     }
-   
+
 }

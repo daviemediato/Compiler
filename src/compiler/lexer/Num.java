@@ -1,9 +1,8 @@
 
 package compiler.lexer;
 
-
 public class Num extends Token {
-   public final int value;
+    public final int value;
 
     public Num(int value) {
         super(Tags.INT);
@@ -12,7 +11,7 @@ public class Num extends Token {
 
     @Override
     public String toString() {
-        return "Num{" + "value = " + value + '}';
+        return "Num     " + "value = " + value + "  ";
     }
-  
+
 }
